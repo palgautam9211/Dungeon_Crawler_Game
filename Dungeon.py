@@ -120,7 +120,18 @@ all_sprites = pygame.sprite.Group(player, *walls, *enemies)
 # Main Game loop
 running = True
 game_over = False
-start_time = pygame.time.get_ticks()  # Start time of the game
+start_time = 0
+
+def reset_game():
+    global player, walls, enemies, all_sprites, start_time, game_over
+    player = Player(100, 100)
+    walls = generate_dungeon()
+    enemies = pygame.sprite.Group(Enemy(400, 400))
+    all_sprites = pygame.sprite.Group(player, *walls, *enemies)
+    game_over = False
+    start_time = pygame.time.get_ticks()
+
+reset_game()
 
 while running:
     for event in pygame.event.get():
@@ -155,10 +166,17 @@ while running:
         screen.fill(Black)
         game_over_text = font.render("Game Over!", True, White)
         score_text = font.render(f"You Survived: {elapsed_time} seconds", True, White)
+        play_again_text = font.render("Press Space to Play Again", True, White)
         text_rect_game_over = game_over_text.get_rect(center=(screen_width // 2, screen_height // 2 - 30))
-        text_rect_score = score_text.get_rect(center=(screen_width // 2, screen_height // 2 + 30))
+        text_rect_score = score_text.get_rect(center=(screen_width // 2, screen_height // 2))
+        text_rect_play_again = play_again_text.get_rect(center=(screen_width // 2, screen_height // 2 + 50))  # Increased vertical spacing
         screen.blit(game_over_text, text_rect_game_over)
         screen.blit(score_text, text_rect_score)
+        screen.blit(play_again_text, text_rect_play_again)
+
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_SPACE]:
+            reset_game()
 
     # Update the display
     pygame.display.flip()
